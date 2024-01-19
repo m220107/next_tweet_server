@@ -10,21 +10,30 @@ use Illuminate\Http\Request;
 class TweetController extends Controller
 {
     //データ取得
-    function get() {
+    function get()
+    {
         //「tweets」テーブルのレコードをすべて取得
         // SELECT * FROM tweets;
-        $tweets = Tweet::get();
+        $tweets = Tweet::with('user')->get();
         // JSONでレスポンス
         return response()->json($tweets);
     }
 
     //データ投稿
-    function add(Request $request) {
-        //「tweets」テーブルにレコード追加
-        // INSERT INTO tweets (user_id, message) VALUES (xxx, xxx);
-        $tweet = Tweet::create($request->all());
-        // JSONでレスポンス
-        return response()->json($tweet);
-    }
+    function add(Request $request)
+    {
+        //認証中のUserを取得
+        $user = $request->user();
 
+        // User IDが一致したらDB保存
+        if ($user->id == $request->user_id) {
+            $tweet = Tweet::create($request->all());
+            return response()->json($tweet);
+        } else {
+            return response()->json(
+                ['error' => 'invalid tweet'],
+                401
+            );
+        }
+    }
 }

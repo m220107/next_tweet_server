@@ -17,7 +17,7 @@ return new class extends Migration
             $table->dateTime('updated_at', $precision = 0);
             $table->unsignedBigInteger('user_id');
             $table->text('message');
-            // $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
