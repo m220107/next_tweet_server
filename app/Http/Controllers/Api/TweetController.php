@@ -13,8 +13,15 @@ class TweetController extends Controller
     function get()
     {
         //「tweets」テーブルのレコードをすべて取得
-        // SELECT * FROM tweets;
-        $tweets = Tweet::with('user')->get();
+        // SELECT * FROM tweets 
+        // JOIN user ON user.id = tweet.user_id 
+        // ORDER BY created_at DESC
+        // OFFSET 0;
+        // LIMIT 25;
+        $tweets = Tweet::with('user')
+            ->orderBy('created_at', 'DESC')
+            ->limit(25)
+            ->get();
         // JSONでレスポンス
         return response()->json($tweets);
     }
@@ -28,6 +35,9 @@ class TweetController extends Controller
         // User IDが一致したらDB保存
         if ($user->id == $request->user_id) {
             $tweet = Tweet::create($request->all());
+            // ここになにか追加するっぽい
+            // ツイートに関連するユーザー情報を取得
+            $tweetWithUser = $tweet->load('user');
             return response()->json($tweet);
         } else {
             return response()->json(
